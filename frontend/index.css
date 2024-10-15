@@ -1,0 +1,32 @@
+body {
+    background-color: black;
+    color: white;
+}
+
+.heading {
+    text-align: center;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+}
+
+div {
+    display: flex;
+    justify-content: center;
+    margin: auto;
+    border: 1px solid white;
+    height: 500px;
+    width: 75%;
+}
+
+input {
+    padding: 20px;
+}
+
+button {
+    padding: 10px;
+}

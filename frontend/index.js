@@ -26,11 +26,11 @@ function sendData(data) {
     })
     .then(response => response.json())
     .then(result => {
-        if (result.success) {
+        if (result.message) {
             alert('Account Created!');
             form.reset();
         } else {
-            alert('Account Creation Failed')
+            alert('Account Creation Failed: ' + (result.error || 'Unknown error'))
         }
     })
     .catch(error => {

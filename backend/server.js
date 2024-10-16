@@ -32,27 +32,62 @@ app.listen(port, () => {
     console.error('Server failed to start:', err);
 });
 
-// Route
+// Form Route
 app.post('/api/signup', (req, res) => {
     const { firstName, lastName, email, phoneNumber } = req.body;
 
-    if (!isValidPhoneNumber(phoneNumber)) {
-        return res.status(400).json({ error: 'Invalid phone number format, no dashes.'})
+    // Tracking log
+    console.log('Received signup request:', { firstName, lastName, email, phoneNumber });
+
+    // Basic validation
+    if (!firstName || firstName.length < 2) {
+        return res.status(400).json({ error: 'First name must be at least 2 characters long' });
     }
-    
+    if (!lastName || lastName.length < 2) {
+        return res.status(400).json({ error: 'Last name must be at least 2 characters long' });
+    }
+    if (!isValidEmail(email)) {
+        return res.status(400).json({ error: 'Invalid email format' });
+    }
+    if (!isValidPhoneNumber(phoneNumber)) {
+        return res.status(400).json({ error: 'Invalid phone number format' });
+    }
+
     const sql = 'INSERT INTO users (first_name, last_name, email, phone_number) VALUES (?, ?, ?, ?)';
 
     db.query(sql, [firstName, lastName, email, phoneNumber], (err, result) => {
         if (err) {
             console.error('Error inserting user:', err);
-            res.status(500).json({ error: 'Error creating user' });
-            return;
+            return res.status(500).json({ error: 'Error creating user: ' + err.message });
         }
         res.status(201).json({ message: 'User created successfully', userId: result.insertId });
     });
 });
 
-// Phone number validation
+function isValidEmail(email) {
+    return /\S+@\S+\.\S+/.test(email);
+}
+
 function isValidPhoneNumber(phoneNumber) {
     return /^\d{10}$/.test(phoneNumber);
 }
+
+// Search Route
+
+app.get('/api/search', (req, res) => {
+    const searchName = req.query.name;
+    const sql = `
+    SELECT first_name, last_name, email, phone_number
+    FROM users
+    WHERE CONCAT(first_name, ' ', last_name) LIKE ?`;
+
+    db.query(sql, [`%${searchName}%`], (err, results) =>
+    {
+        if (err) {
+            console.error('Error searching users:', err)
+            res.status(500).json({ error: 'Error searching users' });
+            return;
+        }
+        res.json(results)
+    })
+})

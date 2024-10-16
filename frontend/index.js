@@ -1,3 +1,4 @@
+
 const form = document.getElementById('signupForm')
 
 form.addEventListener('submit', handleSubmit);
@@ -24,19 +25,20 @@ function sendData(data) {
         },
         body: JSON.stringify(data),
     })
-    .then(response => response.json())
-    .then(result => {
-        if (result.message) {
-            alert('Account Created!');
-            form.reset();
-        } else {
-            alert('Account Creation Failed: ' + (result.error || 'Unknown error'))
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => Promise.reject(err));
         }
+        return response.json();
+    })
+    .then(result => {
+        alert('Account Created: ' + result.message);
+        form.reset();
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('An error occurred, try again.')
-    })
+        alert('Account Creation Failed: ' + (error.error || 'Unknown error'));
+    });
 }
 
 // form validation
@@ -54,4 +56,36 @@ function validateForm(data) {
         return false;
     }
     return true;
+}
+
+// search bar function
+function searchUsers() {
+    const searchTerm = document.getElementById('searchInput').value;
+
+    fetch(`http://localhost:3000/api/search?name=${encodeURIComponent(searchTerm)}`)
+        .then(response => response.json())
+        .then(data => {
+            const resultsDiv = document.getElementById('searchResults')
+            resultsDiv.innerHTML = '';
+
+            if (data.length === 0) {
+                resultsDiv.innerHTML = 'No users found.';
+                return;
+            }
+
+            data.forEach(user => {
+                resultsDiv.innerHTML += `
+                <div>
+                    <p>Name: ${user.first_name} ${user.last_name}</p>
+                    <p>Email: ${user.email}</p>
+                    <p>Phone: ${user.phone_number}</p>
+                    <hr>
+                </div>`;
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+
+        document.getElementById('searchResults').innerHTML = 'An error occurred while searching.';
+        });
 }

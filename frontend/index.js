@@ -49,5 +49,9 @@ function validateForm(data) {
         alert('Please enter a valid email address.')
         return false;
     }
+    if (!/^\d{10}$/.test(data.phoneNumber)) {
+        alert('Please enter a 10-digit phone number without dashes.');
+        return false;
+    }
     return true;
 }

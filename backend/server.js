@@ -35,6 +35,11 @@ app.listen(port, () => {
 // Route
 app.post('/api/signup', (req, res) => {
     const { firstName, lastName, email, phoneNumber } = req.body;
+
+    if (!isValidPhoneNumber(phoneNumber)) {
+        return res.status(400).json({ error: 'Invalid phone number format, no dashes.'})
+    }
+    
     const sql = 'INSERT INTO users (first_name, last_name, email, phone_number) VALUES (?, ?, ?, ?)';
 
     db.query(sql, [firstName, lastName, email, phoneNumber], (err, result) => {
@@ -46,3 +51,8 @@ app.post('/api/signup', (req, res) => {
         res.status(201).json({ message: 'User created successfully', userId: result.insertId });
     });
 });
+
+// Phone number validation
+function isValidPhoneNumber(phoneNumber) {
+    return /^\d{10}$/.test(phoneNumber);
+}

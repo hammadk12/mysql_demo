@@ -10,23 +10,31 @@ body {
 .form {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     gap: 10px;
+    width: 40%;
 }
 
-div {
-    display: flex;
-    justify-content: center;
+.form input, .form button {
+    padding: 10px;
+}
+
+.main-container {
+    padding: 50px;
     margin: auto;
     border: 1px solid white;
+    height: 700px;
+}
+
+.form-container {
+    display: flex;
+    justify-content: center;
+    padding-top: 50px;
+    border: 1px solid white;
     height: 500px;
-    width: 75%;
+    column-gap: 100px;
 }
 
-input {
-    padding: 20px;
-}
 
-button {
+.search-container input, .search-container button{
     padding: 10px;
 }
